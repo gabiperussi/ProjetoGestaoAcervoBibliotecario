@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<hmtl lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title> Sistema de gestão de biblioteca </title>
+    </head>
+    <body>
+        <h1> Faça o login</h1>
+       <form id="FormLogin"> 
+    <div class="formContainer">
+        <input type="email" placeholder="E-mail" id="email" required>
+        <br> <br>
+        <input type="password" placeholder="Senha" id="senha" required>
+        <br> <br>
+        <button type="submit">Entrar</button>
+    </div>
+            </form>
+            <div id="mensagem"></div> 
+      
+        <script>
+            const API_BASE ="http://localhost/ProjetoGestaoAcervoBibliotecario/api_livros/";
+
+            function getFormData() {
+            return { 
+                email: document.getElementById('email').value,
+                senha: document.getElementById('senha').value 
+            }; 
+            } 
+            
+            async function Login(User){
+                try{
+                  
+                   fetch (`${API_BASE}/login`, {
+                      method:'POST',
+                      headers: {
+                        "Content-type" : 'application/json'
+                      },
+                      body: JSON.stringify(user)
+                   });
+                   const dados = respota.JSON
+                   if (!resposta.ok){
+                     console.log(resposta);
+                     throw new error(`HTTP: ${resposta.status} - ${resposta.mesage}`)
+                   }
+
+                   //retornando a respota da API 
+                   return dados
+                } catch (error){
+                 throw erro; //printado na console
+                }
+            }
+            async function handleFomrSubmit(event) {
+                event.preventDefalt();
+                const form = document.getElementById('Formlogin')
+                const msg = document.getElementById('mensagem')
+                const user = getFormData();
+
+                //checkPoint para validar coleta de dados
+
+                console.log(user);
+                try {
+                    const resultado = await login(user)
+                    confirm.log(resultado);
+                    if (resultado){
+                        sessionStorage.setItem('usuario', JSON.stringify(resultado));
+                       windows.location.href = "principal.html";
+                    } else {
+                        msg.textContent = `Login ou senha incorreto`;
+                        msg.style.color = "red";
+                    }
+
+                } catch (error) {
+                   msg.textContent = `Erro no Login -${error}`;
+                   msg.style.color = "red";
+                }
+            }
+            document.addEventListener("DOMContentLoaded", () =>{
+                document.getElementById('FormLogin').addEventListener('submit',handleFomrSubmit)
+            })
+        </script>
