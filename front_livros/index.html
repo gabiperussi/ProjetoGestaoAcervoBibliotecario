@@ -30,7 +30,7 @@
             async function Login(User){
                 try{
                   
-                   fetch (`${API_BASE}/login`, {
+                   const resposta = await fetch (`${API_BASE}/login`, {
                       method:'POST',
                       headers: {
                         "Content-type" : 'application/json'
