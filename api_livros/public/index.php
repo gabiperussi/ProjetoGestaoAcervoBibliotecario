@@ -1,55 +1,67 @@
 <?php
 
-//configurações de error
-error_reporting(E_ALL)
-ini_set('display_erros', 1);
+// 1. Configurações de erro (Crucial para o desenvolvedor)
+error_reporting(E_ALL); 
+ini_set('display_errors', 1); 
 
-//cabeçalho para o Json
-header('Content-Type: Application/json; charsert=utf-8');
-$origin = $_SERVER['HTTP_ORIGIN']?? 'http://127.0.0.1:80'; //API recebe requisição de qualquer
-header('Access-Control-Allow-Origin:'. $origin);
-header('Acess-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
-header('Acess-Control-Allow-Headers: Content-Type, Autorization, X-requested-With');
+// 2. Cabeçalho para JSON e CORS (Comunicação com o Front-end)
+header('Content-Type: application/json; charset=utf-8');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS'){
+// Define a origem para permitir que o JavaScript acesse a API
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '*'; 
+header('Access-Control-Allow-Origin: ' . $origin);
+header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+// Resposta para requisições de pré-fluxo (Preflight) do navegador
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
-    exist;
+    exit; 
 }
 
-
-// Importação de códigos
+// 3. Importação de arquivos base
 require_once '../config/db.php';
-require_once '../app/Controller/UsuarioControler.php';
+require_once '../app/controler/usuarioControler.php';
 
-$database = new DataBase();
-$db =$database->getConnection();
+// Inicializa a conexão com o banco
+$database = new database(); 
+$db = $database->getConnection();
 
-//recuperar URL, configuração de rota
-$path = parse_url($_SERVER['Request_URL'], PHP_URL);
-$routher = basename($path);
-$method = $_SERVER['REQUEST_METHOD']
+// 4. Sistema de Rotas
+// Pegamos a URL atual e limpamos para saber qual ação o usuário quer
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$route = basename($path); 
+$method = $_SERVER['REQUEST_METHOD'];
 
 try {
-    switch ($route){
-        case 'health'
-            echo json_encode([
-                'status' => 'Ok - Sistema Online!'
-            ]);
+    switch ($route) {
+        case 'health':
             http_response_code(200);
+            echo json_encode(['status' => 'Ok - Sistema Online!']);
+            break;
+
         case 'login': 
-            if ($method === 'POST'){
+            if ($method === 'POST') {
+                $controller = new UsuarioControler($db);
+                $controller->loginUsuario();
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Método não permitido']);
+            }
+            break;
 
-                UsuarioControler = new UsuarioControler($db);
-             
-        }
-
+        default:
+            http_response_code(404);
+            echo json_encode(['error' => 'Rota não encontrada']);
+            break;
     }
-} catch (thrwable $e) {
-            http_response_code(500);
-            echo Json_encode(['error' => 'erro interno de servidor',
-            'detalhe'=> '$e->getMessage()'
-            ])
+} catch (Throwable $e) {
+    // Caso aconteça qualquer erro grave no servidor
+    http_response_code(500);
+    echo json_encode([
+        'error' => 'Erro interno de servidor',
+        'detalhe' => $e->getMessage()
+    ]);
 }
-
 
 ?>
