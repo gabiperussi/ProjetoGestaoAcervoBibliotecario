@@ -1,3 +1,59 @@
 <html>
-    
+    <!DOCTYPE html>
+<hmtl lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> Lista livros</title>
+    </head>  
+    <body>
+        <h1> PROJETO ACERVO BIBLIOTECA </h1>
+        <hr>
+        <h2> Lista livros </h2>
+        <h3> MENU </h3>
+        <div>
+            <a href="principal.html"><button> Menu Inicial </button></a>
+            <a href="cadastro.html"><button> Cadastrar livros </button></a>
+        </div>
+
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <tr>ID</tr>
+                        <tr>Titulo</tr>
+                        <tr>Descrição</tr>
+                        <tr>Autor</tr>
+                        <tr>Estoque</tr>
+                        <tr>Editar</tr>
+                        <tr>Excluir</tr>
+                    </tr>
+
+                <tbody>
+
+
+                </tbody>   
+                </thead>
+            </table>
+        </div>
+
+        <script>
+           const API_BASE= "http://localhost/ProjetoGestaoAcervoBibliotecario/api_livros/";
+           async function buscarDadosTabela(){
+             try {
+                 await resposta = await fetch(`${API_BASE}/livro`);
+
+             } catch() {
+
+             }
+           }
+
+
+            document.addEventListener("DOMContentLoaded", async() =>{
+              const dados = await buscarDadosTabela();
+              preencherTabela(dados);
+            });
+        </script>
+    </body>
+
 </html>

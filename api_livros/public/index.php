@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // 3. Importação de arquivos base
 require_once '../config/db.php';
 require_once '../app/controler/usuarioControler.php';
+require_once '../app/controler/LivroControler'
 
 // Inicializa a conexão com o banco
 $database = new database(); 
@@ -54,6 +55,11 @@ try {
             http_response_code(404);
             echo json_encode(['error' => 'Rota não encontrada']);
             break;
+        case 'livro':
+            if($method==='GET'){
+                $livroController = new LivroControler($db);
+                $livroController->getLivros();
+            }         
     }
 } catch (Throwable $e) {
     // Caso aconteça qualquer erro grave no servidor
