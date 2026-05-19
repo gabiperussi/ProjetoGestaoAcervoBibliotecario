@@ -6,6 +6,27 @@
     <title>Página Principal</title>
 </head>
 <body>
-    <h1>Login com Sucesso !</h1>
+    <h1>PROJETO - Gestão Acervo Bibliotecario !</h1>
+    <hr>
+    <h2>MENU INICIAL</h2>
+    <button id="listalivros.html">Listar livros </button>
+    <span>|||</span>
+    <button id="movimentarEstoque.html"> Gestão de estoque</button>
+    <span>|||</span>
+    <button id="btnLogout"> Logout </button>
+    <h3 id="mensagem"></h3>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", ()=> {
+            const usuario = sessionStorage.getItem('usuario');
+            if(!usuario){
+                window.location.href = "index.html";
+            }
+            const msg = document.getElementById('mensage');
+            msg.textContent = "Bem vindo - ${usuario.nome} ${usuario.sobrenome}!😊"
+        });
+    </script>
+
+
 </body>
 </html>
