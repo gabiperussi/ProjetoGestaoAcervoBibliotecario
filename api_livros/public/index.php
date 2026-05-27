@@ -22,14 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // 3. Importação de arquivos base
 require_once '../config/db.php';
 require_once '../app/controler/usuarioControler.php';
-require_once '../app/controler/LivroControler'
+require_once '../app/controler/LivroController.php'; // CORRIGIDO: Adicionado ';' e '.php' (verifique se o seu arquivo tem .php)
 
 // Inicializa a conexão com o banco
 $database = new database(); 
 $db = $database->getConnection();
 
 // 4. Sistema de Rotas
-// Pegamos a URL atual e limpamos para saber qual ação o usuário quer
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $route = basename($path); 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -51,15 +50,20 @@ try {
             }
             break;
 
-        default:
+        case 'livro': // CORRIGIDO: Movido para antes do 'default'
+            if ($method === 'GET') {
+                $livroController = new LivroControler($db);
+                $livroController->getLivros();
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Método não permitido']);
+            }
+            break;
+            
+        default: // CORRIGIDO: O 'default' agora é o último caso do switch
             http_response_code(404);
             echo json_encode(['error' => 'Rota não encontrada']);
             break;
-        case 'livro':
-            if($method==='GET'){
-                $livroController = new LivroControler($db);
-                $livroController->getLivros();
-            }         
     }
 } catch (Throwable $e) {
     // Caso aconteça qualquer erro grave no servidor
@@ -69,5 +73,4 @@ try {
         'detalhe' => $e->getMessage()
     ]);
 }
-
 ?>

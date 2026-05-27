@@ -27,29 +27,39 @@
         } 
         
         async function Login(User) {
-            try {
-                const resposta = await fetch(`${API_BASE}/login`, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": 'application/json'
-                    },
-                    body: JSON.stringify(User) 
-                });
+    try {
+        const resposta = await fetch(`${API_BASE}/login`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": 'application/json'
+            },
+            body: JSON.stringify(User) 
+        });
 
-                const dados = await resposta.json(); 
+        // Captura o texto bruto primeiro para evitar o crash do JSON inválido
+        const textoResposta = await resposta.text();
+        let dados = {};
 
-                if (!resposta.ok) {
-                    console.log("Erro na requisição:", resposta);
-                    
-                    throw new Error(dados.message || `Erro HTTP: ${resposta.status}`);
-                }
-
-                return dados; 
-            } catch (error) {
-                console.error("Falha no processo de login:", error);
-                throw error; 
-            }
+        try {
+            // Tenta converter para objeto se for um JSON válido
+            dados = JSON.parse(textoResposta);
+        } catch (e) {
+            // Se falhar, significa que o PHP cuspiu um erro HTML na tela
+            console.error("O PHP retornou HTML em vez de JSON. Resposta do servidor:\n", textoResposta);
+            throw new Error("O servidor respondeu com um erro interno formatado em HTML. Verifique o console.");
         }
+
+        if (!resposta.ok) {
+            console.log("Erro na requisição:", resposta);
+            throw new Error(dados.error || dados.detalhe || `Erro HTTP: ${resposta.status}`);
+        }
+
+        return dados; 
+    } catch (error) {
+        console.error("Falha no processo de login:", error);
+        throw error; 
+    }
+}
 
         async function handleFormSubmit(event) {
             event.preventDefault(); 
